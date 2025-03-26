@@ -4,6 +4,8 @@
 ### Usage
 Running this script will block *all* IPv4 and IPv6 traffic from the listed countries, deemed malicious due to their high rates of cybercrime.
 
+This list is tailored to a specific server/cloud's particular use cases and geographic location, <ins>you must ensure</ins> that you do not block a country you operate in.
+
 The commands add DROP rules to both the INPUT and DOCKER-USER iptables chains. This ensures coverage in case of externally exposed containers that would otherwise bypass this protection.
 
 ### Countries 
