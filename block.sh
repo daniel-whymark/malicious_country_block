@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Parameters
-countries=( cn ru ua in ir vn br th id pk dz )
+countries=( ru ua cn ng ro kp br in ir by gh za md il kz vn ae th id pk dz )
 
 
 # Cleanup
