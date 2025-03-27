@@ -5,7 +5,11 @@ countries=( ru ua cn ng ro kp br in ir by gh za md il kz vn ae th id pk dz )
 
 
 # Cleanup
+echo ""
+echo "#############################"
 echo "Clearing existing rulesets..."
+echo "#############################"
+echo ""
 
 for country in "${countries[@]}"
 do
@@ -22,11 +26,22 @@ do
     ip6tables -D DOCKER-USER -m set --match-set $country-ipv6 src -j DROP
 done
 
-ipset destroy
+for country in "${countries[@]}"
+do
+    echo "Destroying the IP set for $country IPv4..."
+    ipset destroy $country-ipv4
+
+    echo "Destroying the IP set for $country IPv6..."
+    ipset destroy $country-ipv6
+done
 
 
 # Preparing
+echo ""
+echo "#######################"
 echo "Creating the IP sets..."
+echo "#######################"
+echo ""
 
 for country in "${countries[@]}"
 do
@@ -42,7 +57,11 @@ rm -rfv /tmp/ipblocks/
 
 
 # Downloading country data
+echo ""
+echo "####################################################"
 echo "Pulling the latest IP sets for required countries..."
+echo "####################################################"
+echo ""
 
 mkdir -p /tmp/ipblocks/ipv4/
 mkdir -p /tmp/ipblocks/ipv6/
@@ -53,12 +72,16 @@ do
     wget -nv -P /tmp/ipblocks/ipv4/ https://www.ipdeny.com/ipblocks/data/aggregated/$country-aggregated.zone
 
     echo "Downloading aggregated country IPv6 block file for $country..."
-    wget -nv -P /tmp/ipblocks/ipv6/ https://www.ipdeny.com/ipv6/data/aggregated/$country-aggregated.zone
+    wget -nv -P /tmp/ipblocks/ipv6/ https://www.ipdeny.com/ipv6/ipaddresses/aggregated/$country-aggregated.zone
 done
 
 
 # Creating IP sets
+echo ""
+echo "###############################################################################"
 echo "Adding each IP address from the downloaded lists into the respective IP sets..."
+echo "###############################################################################"
+echo ""
 
 for country in "${countries[@]}"
 do
@@ -77,21 +100,29 @@ done
 
 
 # Adding firewall rules
+echo ""
+echo "##########################"
 echo "Creating iptables rules..."
+echo "##########################"
+echo ""
 
 for country in "${countries[@]}"
 do
     echo "Creating DROP rule for $country in INPUT IPv4..."
-    iptables -I INPUT -m set --match-set china-ipv4 src -j DROP
+    iptables -I INPUT -m set --match-set $country-ipv4 src -j DROP
 
     echo "Creating DROP rule for $country in INPUT IPv6..."
-    ip6tables -I INPUT -m set --match-set china-ipv6 src -j DROP
+    ip6tables -I INPUT -m set --match-set $country-ipv6 src -j DROP
 
     echo "Creating DROP rule for $country in DOCKER-USER IPv4..."
-    iptables -I DOCKER-USER -m set --match-set china-ipv4 src -j DROP
+    iptables -I DOCKER-USER -m set --match-set $country-ipv4 src -j DROP
 
     echo "Creating DROP rule for $country in DOCKER-USER IPv6..."
-    ip6tables -I DOCKER-USER -m set --match-set china-ipv6 src -j DROP
+    ip6tables -I DOCKER-USER -m set --match-set $country-ipv6 src -j DROP
 done
 
+echo ""
+echo "########"
 echo "Finished"
+echo "########"
+echo ""
